@@ -1,6 +1,6 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react'; // Icono
 
 const LoginPage = () => {
   const [usuario, setUsuario] = useState('');
@@ -32,7 +32,15 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-slate-900 text-white">
+    <div className="flex justify-center items-center h-screen bg-slate-900 text-white relative">
+      {/* Back arrow */}
+    <button
+            onClick={() => navigate(-1)}
+            className="absolute top-4 left-4 flex items-center text-white hover:text-gray-300"
+          >
+            <ArrowLeft className="mr-2" /> Volver
+          </button>
+
       <form onSubmit={handleSubmit} className="bg-slate-800 p-6 rounded shadow-md w-96 space-y-4 text-center">
         <img src="/galileo.svg" alt="Logo Galileo" className="h-20 mx-auto mb-2" />
         <h2 className="text-xl font-bold">Iniciar Sesión</h2>

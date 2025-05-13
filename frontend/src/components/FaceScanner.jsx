@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import * as faceapi from 'face-api.js';
 
 const FaceScanner = () => {
@@ -99,10 +100,37 @@ const FaceScanner = () => {
   }, []);
 
   return (
-    <div className="p-6">
-      <h2 className="text-xl font-bold mb-4">Escaneo Facial</h2>
-      <video ref={videoRef} autoPlay muted playsInline width="720" height="560" />
-      {mensaje && <p className="mt-4 text-green-400 text-lg font-semibold">{mensaje}</p>}
+    <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white p-6">
+      <div className="flex flex-col items-center space-y-6 max-w-2xl w-full">
+        <h2 className="text-2xl font-bold text-center">Escaneo Facial</h2>
+
+        <video
+          ref={videoRef}
+          autoPlay
+          muted
+          playsInline
+          className="w-full max-w-lg rounded shadow"
+        />
+
+        {mensaje && (
+          <p className="text-green-400 text-lg font-semibold text-center">{mensaje}</p>
+        )}
+
+        <div className="space-x-4">
+          <Link
+            to="/login"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+          >
+            Iniciar Sesión
+          </Link>
+          <Link
+            to="/empleados"
+            className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded"
+          >
+            Registrar Usuario
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };

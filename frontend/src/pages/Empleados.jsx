@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import * as faceapi from 'face-api.js';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 
 const Empleados = () => {
   const [nombre, setNombre] = useState('');
   const [codigo, setCodigo] = useState('');
   const [foto, setFoto] = useState(null);
+  const navigate = useNavigate();
 
   const handleFotoChange = (e) => {
     const file = e.target.files[0];
@@ -68,30 +71,43 @@ const Empleados = () => {
   };
 
   return (
-    <div className="p-6">
-      <h2 className="text-xl font-bold mb-4">Registrar Empleado</h2>
-      <div className="space-y-4 max-w-md">
-        <input
-          type="text"
-          placeholder="Código"
-          className="border p-2 w-full text-black"
-          value={codigo}
-          onChange={(e) => setCodigo(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Nombre"
-          className="border p-2 w-full text-black"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
-        />
-        <input type="file" accept="image/*" onChange={handleFotoChange} />
-        <button
-          onClick={handleGuardar}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          Guardar Empleado
-        </button>
+    <div className="min-h-screen bg-slate-900 text-white relative">
+      {/* Top-left back arrow */}
+      <button
+        onClick={() => navigate(-1)}
+        className="absolute top-4 left-4 flex items-center text-white hover:text-gray-300"
+      >
+        <ArrowLeft className="mr-2" /> Volver
+      </button>
+
+      {/* Centered form */}
+      <div className="flex justify-center items-center h-screen">
+        <div className="bg-slate-800 p-6 rounded shadow-lg w-full max-w-md">
+          <h2 className="text-xl font-bold mb-4 text-center">Registrar Empleado</h2>
+          <div className="space-y-4">
+            <input
+              type="text"
+              placeholder="Código"
+              className="border p-2 w-full text-black"
+              value={codigo}
+              onChange={(e) => setCodigo(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Nombre"
+              className="border p-2 w-full text-black"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+            />
+            <input type="file" accept="image/*" onChange={handleFotoChange} />
+            <button
+              onClick={handleGuardar}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full font-semibold"
+            >
+              Guardar Empleado
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

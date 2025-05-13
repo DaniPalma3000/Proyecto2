@@ -1,81 +1,100 @@
-
 import React, { useState } from 'react';
 
 const Reportes = () => {
   const [inicio, setInicio] = useState('');
   const [fin, setFin] = useState('');
   const [reporte, setReporte] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const obtenerReporte = async () => {
     if (!inicio || !fin) {
-      alert('Debe seleccionar ambas fechas');
+      setError('Debe seleccionar ambas fechas');
       return;
     }
 
+    setError('');
+    setLoading(true);
+
     try {
       const res = await fetch(`http://localhost:3000/api/reportes/asistencia?inicio=${inicio}&fin=${fin}`);
+      if (!res.ok) throw new Error('No se pudo obtener el reporte');
       const data = await res.json();
       setReporte(data);
     } catch (err) {
       console.error('Error al obtener reporte:', err);
-      alert('No se pudo obtener el reporte');
+      setError('No se pudo obtener el reporte');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="p-6">
-      <h2 className="text-xl font-bold mb-4">Reporte de Asistencia</h2>
-      <div className="flex gap-4 mb-4">
-        <div>
-          <label>Desde:</label>
+      <h2 className="text-2xl font-bold mb-6 text-white">Reporte de Asistencia</h2>
+
+      {error && <div className="bg-red-500 text-white p-3 mb-4 rounded">{error}</div>}
+
+      <div className="flex items-end gap-6 mb-6">
+        <div className="flex flex-col">
+          <label className="text-sm mb-1 text-gray">Desde:</label>
           <input
             type="date"
             value={inicio}
             onChange={(e) => setInicio(e.target.value)}
-            className="p-2 border rounded"
+            className="p-2 border rounded-lg shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
           />
         </div>
-        <div>
-          <label>Hasta:</label>
+        <div className="flex flex-col">
+          <label className="text-sm mb-1 text-gray">Hasta:</label>
           <input
             type="date"
             value={fin}
             onChange={(e) => setFin(e.target.value)}
-            className="p-2 border rounded"
+            className="p-2 border rounded-lg shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
           />
         </div>
-        <button onClick={obtenerReporte} className="bg-blue-600 text-white px-4 py-2 rounded h-fit mt-5">
-          Generar
+        <button
+          onClick={obtenerReporte}
+          className="bg-blue-600 text-white text-sm px-3 py-2 rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          {loading ? 'Generando...' : 'Generar'}
         </button>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full text-sm text-left border">
-          <thead className="bg-slate-800 text-white">
+        <table className="min-w-full text-sm text-left border border-gray-300">
+          <thead className="bg-blue-800 text-white">
             <tr>
-              <th className="px-4 py-2">Código</th>
-              <th className="px-4 py-2">Empleado</th>
-              <th className="px-4 py-2">Depto</th>
-              <th className="px-4 py-2">Fecha</th>
-              <th className="px-4 py-2">Entrada</th>
-              <th className="px-4 py-2">Salida</th>
-              <th className="px-4 py-2">Tarde (min)</th>
-              <th className="px-4 py-2">Temprano (min)</th>
+              <th className="px-6 py-3">Código</th>
+              <th className="px-6 py-3">Empleado</th>
+              <th className="px-6 py-3">Depto</th>
+              <th className="px-6 py-3">Fecha</th>
+              <th className="px-6 py-3">Entrada</th>
+              <th className="px-6 py-3">Salida</th>
+              <th className="px-6 py-3">Tarde (min)</th>
+              <th className="px-6 py-3">Temprano (min)</th>
             </tr>
           </thead>
           <tbody>
-            {reporte.map((r, i) => (
-              <tr key={i} className="border-t">
-                <td className="px-4 py-2">{r.codigo_empleado}</td>
-                <td className="px-4 py-2">{r.nombre_empleado}</td>
-                <td className="px-4 py-2">{r.departamento}</td>
-                <td className="px-4 py-2">{r.fecha}</td>
-                <td className="px-4 py-2">{r.hora_entrada || '--'}</td>
-                <td className="px-4 py-2">{r.hora_salida || '--'}</td>
-                <td className="px-4 py-2">{r.minutos_tarde}</td>
-                <td className="px-4 py-2">{r.minutos_temprano}</td>
+            {reporte.length > 0 ? (
+              reporte.map((r, i) => (
+                <tr key={i} className={`border-t ${i % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
+                  <td className="px-6 py-3">{r.codigo_empleado}</td>
+                  <td className="px-6 py-3">{r.nombre_empleado}</td>
+                  <td className="px-6 py-3">{r.departamento}</td>
+                  <td className="px-6 py-3">{r.fecha}</td>
+                  <td className="px-6 py-3">{r.hora_entrada || '--'}</td>
+                  <td className="px-6 py-3">{r.hora_salida || '--'}</td>
+                  <td className="px-6 py-3">{r.minutos_tarde}</td>
+                  <td className="px-6 py-3">{r.minutos_temprano}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="8" className="px-6 py-3 text-center">No hay datos para mostrar</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
