@@ -2,6 +2,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
+import Departamento from './pages/Departamentos';
 import Navbar from './components/Navbar';
 import FaceScanner from './components/FaceScanner';
 import LoginPage from './pages/LoginPage';
@@ -22,6 +23,7 @@ const App = () => {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/empleados" element={<Empleados />} />
           <Route path="/reportes" element={<Reportes />} />
+          <Route path='/departamentos' element={<Departamento />}/>
         </Routes>
       </div>
     </Router>
