@@ -7,35 +7,43 @@ const LoginPage = () => {
   const [contrasena, setContrasena] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    try {
-      const res = await fetch('http://localhost:3000/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ usuario, contrasena }),
-      });
+  try {
+    const res = await fetch('http://localhost:3000/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ usuario, contrasena }),
+    });
 
-      const data = await res.json();
-      if (res.ok) {
-        alert('Acceso concedido');
-        localStorage.setItem('usuario', JSON.stringify(data.usuario));
+    const data = await res.json();
+
+    if (res.ok) {
+      alert('Acceso concedido');
+      localStorage.setItem('usuario', JSON.stringify(data.usuario));
+
+      // Redirigir según el rol del usuario
+      if (data.usuario.rol === 'admin') {
         navigate('/admin');
       } else {
-        alert(data.error || 'Credenciales incorrectas');
+        navigate('/user'); //usuarios normales
       }
-    } catch (err) {
-      console.error('Error al iniciar sesión:', err);
-      alert('Error de conexión con el servidor');
+    } else {
+      alert(data.error || 'Credenciales incorrectas');
     }
-  };
+  } catch (err) {
+    console.error('Error al iniciar sesión:', err);
+    alert('Error de conexión con el servidor');
+  }
+};
+
 
   return (
     <div className="flex justify-center items-center h-screen bg-slate-900 text-white relative">
       {/* Back arrow */}
     <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/")}
             className="absolute top-4 left-4 flex items-center text-white hover:text-gray-300"
           >
             <ArrowLeft className="mr-2" /> Volver

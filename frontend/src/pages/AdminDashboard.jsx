@@ -1,6 +1,6 @@
-
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaUsers, FaChartBar, FaBuilding } from 'react-icons/fa';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -13,13 +13,41 @@ const AdminDashboard = () => {
     }
   }, [navigate]);
 
+  const sections = [
+    {
+      name: 'Gestión de Empleados',
+      icon: <FaUsers className="text-3xl text-blue-400" />,
+      link: '/empleados',
+    },
+    {
+      name: 'Reportes de Asistencia',
+      icon: <FaChartBar className="text-3xl text-green-400" />,
+      link: '/reportes',
+    },
+    {
+      name: 'Gestión de Departamentos',
+      icon: <FaBuilding className="text-3xl text-purple-400" />,
+      link: '/departamentos',
+    },
+  ];
+
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Panel de Administración</h1>
-      <ul className="space-y-2">
-        <li><a href="/empleados" className="text-blue-400 hover:underline">Gestión de Empleados</a></li>
-        <li><a href="/reportes" className="text-blue-400 hover:underline">Reportes de Asistencia</a></li>
-      </ul>
+      <h1 className="text-3xl font-bold mb-6 text-center text-white">Panel de Administración</h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {sections.map((section, index) => (
+          <a
+            key={index}
+            href={section.link}
+            className="bg-slate-800 p-6 rounded-2xl shadow-md hover:shadow-lg transition duration-300 hover:scale-105 hover:bg-slate-700"
+          >
+            <div className="flex items-center gap-4">
+              {section.icon}
+              <span className="text-lg font-semibold">{section.name}</span>
+            </div>
+          </a>
+        ))}
+      </div>
     </div>
   );
 };
