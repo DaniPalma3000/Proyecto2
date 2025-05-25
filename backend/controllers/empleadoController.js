@@ -19,4 +19,31 @@ const registrarEmpleado = async (req, res) => {
   }
 };
 
-module.exports = { registrarEmpleado };
+const obtenerEmpleadosPorDepartamento = async (req, res) => {
+  const { id } = req.params;
+  console.log('Department ID received:', id);
+
+  try {
+    const result = await pool.query(
+      'SELECT * FROM empleado WHERE departamento_id = $1',
+      [id]
+    );
+    console.log('Query result:', result.rows);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error obteniendo empleados:', error);
+    res.status(500).json({ error: 'Error retrieving employees' });
+  }
+};
+
+const obtenerTodosLosEmpleados = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM empleado');
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error al obtener todos los empleados:', error);
+    res.status(500).json({ error: 'Error al obtener empleados' });
+  }
+};
+
+module.exports = { registrarEmpleado, obtenerEmpleadosPorDepartamento, obtenerTodosLosEmpleados };

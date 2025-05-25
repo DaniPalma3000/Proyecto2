@@ -1,14 +1,25 @@
 {
-  "name": "face-attendance-backend",
+  "name": "face-attendance-frontend",
   "version": "1.0.0",
-  "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.18.2",
-    "face-attendance-backend": "file:",
-    "pg": "^8.11.1"
+    "@vitejs/plugin-react": "^4.4.1",
+    "face-api.js": "^0.20.0",
+    "face-attendance-frontend": "file:",
+    "lucide-react": "^0.511.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^5.5.0",
+    "react-router-dom": "^6.22.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.24",
+    "tailwindcss": "^3.4.1",
+    "vite": "^6.3.5"
   }
 }

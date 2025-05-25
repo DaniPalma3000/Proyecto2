@@ -1,7 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { registrarEmpleado } = require('../controllers/empleadoController');
+const {
+  registrarEmpleado,
+  obtenerEmpleadosPorDepartamento,
+  obtenerTodosLosEmpleados
+} = require('../controllers/empleadoController');
 
-router.post('/empleado', registrarEmpleado);
+router.get('/', obtenerTodosLosEmpleados); //all employees
+
+router.post('/', registrarEmpleado);
+router.get('/por-departamento/:id', obtenerEmpleadosPorDepartamento);
 
 module.exports = router;
