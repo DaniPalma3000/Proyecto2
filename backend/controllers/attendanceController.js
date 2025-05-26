@@ -4,15 +4,14 @@ const fs = require('fs');
 const path = require('path');
 
 const registrarMarca = async (req, res) => {
-  const { codigo_empleado } = req.body;
-
-  if (!codigo_empleado) {
+  const { e_id } = req.body;
+  if (!e_id) {
     return res.status(400).json({ error: 'Código de empleado requerido' });
   }
 
   try {
     const query = fs.readFileSync(path.join(__dirname, '../queries/attendance.sql'), 'utf8');
-    const result = await pool.query(query, [codigo_empleado]);
+    const result = await pool.query(query, [e_id]);
 
     const tipo = result.rows[0]?.insertar_marca;
 

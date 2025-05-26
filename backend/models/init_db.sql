@@ -13,7 +13,6 @@ CREATE TABLE jornada (
 
 CREATE TABLE empleado (
   e_id SERIAL PRIMARY KEY,
-  codigo VARCHAR(10) UNIQUE NOT NULL,
   nombre VARCHAR(100) NOT NULL,
   jornada_id INTEGER REFERENCES jornada(id),
   departamento_id INTEGER REFERENCES departamento(id),
@@ -43,7 +42,7 @@ CREATE TABLE usuarios (
   rol VARCHAR(50)
 );
 
-CREATE OR REPLACE FUNCTION insertar_marca(codigo_emp TEXT)
+CREATE OR REPLACE FUNCTION insertar_marca(codigo_emp INTEGER)
 RETURNS CHAR AS $$
 DECLARE
   emp_id INT;
@@ -57,7 +56,7 @@ DECLARE
 BEGIN
   SELECT e_id, jornada_id INTO emp_id, j_id
   FROM empleado
-  WHERE codigo = codigo_emp;
+  WHERE e_id = codigo_emp;
 
   IF emp_id IS NULL THEN
     RAISE EXCEPTION 'Empleado no encontrado con código: %', codigo_emp;

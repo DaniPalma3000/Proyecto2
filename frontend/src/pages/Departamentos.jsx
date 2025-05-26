@@ -146,7 +146,7 @@ const Departamentos = () => {
                         <ul className="list-disc pl-6">
                           {empleados.map((e) => (
                             <li key={e.e_id}>
-                              {e.nombre} (Código: {e.codigo})
+                              {e.nombre} (Código: {e.e_id})
                             </li>
                           ))}
                         </ul>

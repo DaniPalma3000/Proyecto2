@@ -10,6 +10,7 @@ import Empleados from './pages/Empleados';
 import Reportes from './pages/Reportes';
 import UserDashboard from './pages/UserDashboard';
 import Permisos from './pages/Permisos';
+import Jornadas from './pages/Jornadas';
 
 const AppContent = () => {
   const location = useLocation();
@@ -29,6 +30,7 @@ const AppContent = () => {
         <Route path="/departamentos" element={<Departamento />} />
         <Route path="/user" element={<UserDashboard />} />
         <Route path="/permisos" element={<Permisos />} />
+        <Route path="/jornadas" element={<Jornadas />} />
       </Routes>
     </div>
   );

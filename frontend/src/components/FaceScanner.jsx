@@ -8,7 +8,7 @@ tf.setBackend('cpu').then(() => {
 
 const FaceScanner = () => {
   const videoRef = useRef(null);
-  const lastRecognition = useRef({ codigo: '', timestamp: 0 });
+  const lastRecognition = useRef({ e_id: '', timestamp: 0 });
   const [mensaje, setMensaje] = useState('');
 
   const startVideo = async () => {
@@ -33,11 +33,22 @@ const FaceScanner = () => {
       const data = await res.json();
       localStorage.removeItem('descriptores');
 
+      // Guardar un mapa de e_id a nombre para mostrar luego
+      const idToNombre = {};
+      data.forEach((d) => {
+        if (d && d.e_id && d.nombre) {
+          idToNombre[String(d.e_id)] = d.nombre;
+        }
+      });
+
+      // Guardar el mapa en una ref para accederlo en recognizeFace
+      FaceScanner.idToNombreMap = idToNombre;
+
       return data
         .filter((d) => d && d.descriptor && d.descriptor.length === 128)
         .map((d) => {
           const descriptor = new Float32Array(d.descriptor);
-          return new faceapi.LabeledFaceDescriptors(d.codigo, [descriptor]);
+          return new faceapi.LabeledFaceDescriptors(String(d.e_id), [descriptor]);
         });
     } catch (err) {
       console.error('Error al cargar descriptores desde la base:', err);
@@ -67,17 +78,20 @@ const FaceScanner = () => {
         console.log('Mejor coincidencia:', bestMatch);
         const ahora = Date.now();
         if (
-          bestMatch.label === lastRecognition.current.codigo &&
+          bestMatch.label === lastRecognition.current.e_id &&
           ahora - lastRecognition.current.timestamp < 60000
         ) {
           return;
         }
 
         if (bestMatch.label !== 'unknown') {
-          lastRecognition.current = { codigo: bestMatch.label, timestamp: ahora };
+          lastRecognition.current = { e_id: bestMatch.label, timestamp: ahora };
 
-          console.log('Empleado reconocido:', bestMatch.label);
-          setMensaje(`✅ Empleado reconocido: ${bestMatch.label}`);
+          // Obtener el nombre usando el mapa guardado
+          const nombre = FaceScanner.idToNombreMap?.[bestMatch.label] || bestMatch.label;
+
+          console.log('Empleado reconocido:', nombre);
+          setMensaje(`✅ Empleado reconocido: ${nombre}`);
 
           enviarMarca(bestMatch.label);
 
@@ -87,15 +101,15 @@ const FaceScanner = () => {
     }, 3000);
   };
 
-  const enviarMarca = async (codigo) => {
+  const enviarMarca = async (e_id) => {
     const now = new Date();
     const payload = {
-      codigo_empleado: codigo,
+      e_id: Number(e_id),
       tipo_marca: 'auto',
       fecha: now.toISOString().split('T')[0],
       hora: now.toTimeString().split(' ')[0],
     };
-
+    console.log('Enviando marca:', payload);
     try {
       const res = await fetch('http://localhost:3000/api/marcar', {
         method: 'POST',

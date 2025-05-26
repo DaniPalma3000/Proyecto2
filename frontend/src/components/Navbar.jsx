@@ -12,19 +12,21 @@ const Navbar = () => {
   };
 
   //si no estamos logueados, no mostramos el navbar
-   if (!usuario) return null;
+  if (!usuario) return null;
 
   return (
     <nav className="bg-slate-800 p-4 flex justify-between items-center">
       <div className="text-lg font-semibold">
         <Link to="/admin" className="hover:text-blue-400 transition">
           Panel de Administración
-        </Link></div>
+        </Link>
+      </div>
       <div className="space-x-4">
         <Link to="/admin" className="hover:underline">Inicio</Link>
         <Link to="/empleados" className="hover:underline">Empleados</Link>
         <Link to="/reportes" className="hover:underline">Reportes</Link>
         <Link to="/departamentos" className="hover:underline">Departamentos</Link>
+        <Link to="/jornadas" className="hover:underline">Jornadas</Link>
         <button onClick={handleLogout} className="hover:underline text-red-400">
           Cerrar sesión
         </button>

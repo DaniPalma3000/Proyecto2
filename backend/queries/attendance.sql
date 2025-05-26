@@ -1,1 +1,1 @@
-SELECT insertar_marca($1);
+SELECT insertar_marca($1::integer);

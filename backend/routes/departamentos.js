@@ -44,7 +44,7 @@ router.get('/departamentos/:id/empleados', async (req, res) => {
 
   try {
     const result = await pool.query(
-      `SELECT e.e_id, e.nombre, e.codigo
+      `SELECT e.e_id, e.nombre
        FROM empleado e
        JOIN departamento d ON e.departamento_id = d.id
        WHERE d.id = $1`,

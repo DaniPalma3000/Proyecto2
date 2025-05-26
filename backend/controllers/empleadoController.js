@@ -11,9 +11,9 @@ const listarEmpleados = async (req, res) => {
 };
 
 const registrarEmpleado = async (req, res) => {
-  const { codigo, nombre, departamento, rol, descriptor } = req.body;
+  const { nombre, departamento, rol, descriptor } = req.body;
 
-  if (!codigo || !nombre || !departamento || !rol || !descriptor) {
+  if (!nombre || !departamento || !rol || !descriptor) {
     return res.status(400).json({ error: 'Faltan datos requeridos' });
   }
 
@@ -28,9 +28,9 @@ const registrarEmpleado = async (req, res) => {
 
 
     const result = await pool.query(
-      `INSERT INTO empleado (codigo, nombre, jornada_id, departamento_id, descriptor)
-   VALUES ($1, $2, $3, $4, $5)`,
-      [codigo, nombre, jornada_id, departamento_id, JSON.stringify(descriptor)]
+      `INSERT INTO empleado (nombre, jornada_id, departamento_id, descriptor)
+   VALUES ($1, $2, $3, $4)`,
+      [nombre, jornada_id, departamento_id, JSON.stringify(descriptor)]
     );
 
     res.status(200).json({ mensaje: 'Empleado registrado en la base de datos' });
@@ -45,7 +45,7 @@ const registrarEmpleado = async (req, res) => {
 };
 
 const obtenerDescriptores = async (req, res) => {
-  const result = await pool.query('SELECT codigo, descriptor FROM empleado WHERE descriptor IS NOT NULL');
+  const result = await pool.query('SELECT e_id, nombre, descriptor FROM empleado WHERE descriptor IS NOT NULL');
   res.status(200).json(result.rows);
 };
 

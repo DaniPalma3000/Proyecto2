@@ -2,7 +2,6 @@ SELECT
   d.id AS departamento_id,
   d.nombre AS departamento_nombre,
   e.e_id AS empleado_id,
-  e.codigo AS empleado_codigo,
   e.nombre AS empleado_nombre,
   j.nombre AS jornada_nombre,
   j.hora_entrada,

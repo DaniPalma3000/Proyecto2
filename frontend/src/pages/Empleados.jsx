@@ -6,9 +6,10 @@ import { ArrowLeft } from 'lucide-react';
 
 const Empleados = () => {
   const [nombre, setNombre] = useState('');
-  const [codigo, setCodigo] = useState('');
   const [departamento, setDepartamento] = useState('');
   const [departamentos, setDepartamentos] = useState([]);
+  const [jornadas, setJornadas] = useState([]);
+  const [jornadaId, setJornadaId] = useState('');
   const [rol, setRol] = useState('');
   const [foto, setFoto] = useState(null);
   const navigate = useNavigate();
@@ -26,82 +27,96 @@ const Empleados = () => {
     fetchDepartamentos();
   }, []);
 
+  useEffect(() => {
+    const fetchJornadas = async () => {
+      try {
+        const res = await fetch('http://localhost:3000/api/jornadas');
+        const data = await res.json();
+        setJornadas(data);
+      } catch (err) {
+        console.error('Error cargando jornadas:', err);
+      }
+    };
+
+    fetchJornadas();
+  }, []);
+
+
   const handleFotoChange = (e) => {
     const file = e.target.files[0];
     setFoto(file);
   };
 
-const handleGuardar = async () => {
-  if (!foto || !nombre || !codigo || !departamento || !rol) {
-    alert('Complete todos los campos y suba una foto.');
-    return;
-  }
-
-  try {
-    await tf.setBackend('cpu');
-    await tf.ready();
-
-    const MODEL_URL = '/models';
-
-    await Promise.all([
-      faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
-      faceapi.nets.faceLandmark68TinyNet.loadFromUri(MODEL_URL),
-      faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-    ]);
-    console.log('✅ Modelos cargados correctamente');
-
-    const img = new Image();
-    img.src = URL.createObjectURL(foto);
-    await new Promise((resolve) => { img.onload = resolve; });
-    console.log("📷 Foto cargada:", foto);
-
-    const detections = await faceapi
-      .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
-      .withFaceLandmarks(true)
-      .withFaceDescriptor();
-
-    if (
-      !detections ||
-      !detections.descriptor ||
-      !(detections.descriptor instanceof Float32Array)
-    ) {
-      alert('⚠️ No se detectó un rostro válido en la imagen.');
+  const handleGuardar = async () => {
+    if (!foto || !nombre || !departamento || !rol || !jornadaId) {
+      alert('Complete todos los campos y suba una foto.');
       return;
     }
 
-    const descriptorArray = Array.from(detections.descriptor);
-    console.log('🧪 Descriptor generado:', descriptorArray);
+    try {
+      await tf.setBackend('cpu');
+      await tf.ready();
 
-    const res = await fetch('/api/empleado', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        codigo,
-        nombre,
-        departamento: parseInt(departamento),
-        rol,
-        descriptor: descriptorArray
-      })
-    });
+      const MODEL_URL = '/models';
 
-    const data = await res.json();
+      await Promise.all([
+        faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+        faceapi.nets.faceLandmark68TinyNet.loadFromUri(MODEL_URL),
+        faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+      ]);
+      console.log('✅ Modelos cargados correctamente');
 
-    if (!res.ok) {
-      alert('❌ Error registrando empleado: ' + (data.error || 'Error desconocido'));
-      return;
+      const img = new Image();
+      img.src = URL.createObjectURL(foto);
+      await new Promise((resolve) => { img.onload = resolve; });
+      console.log("📷 Foto cargada:", foto);
+
+      const detections = await faceapi
+        .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
+        .withFaceLandmarks(true)
+        .withFaceDescriptor();
+
+      if (
+        !detections ||
+        !detections.descriptor ||
+        !(detections.descriptor instanceof Float32Array)
+      ) {
+        alert('⚠️ No se detectó un rostro válido en la imagen.');
+        return;
+      }
+
+      const descriptorArray = Array.from(detections.descriptor);
+      console.log('🧪 Descriptor generado:', descriptorArray);
+
+      const res = await fetch('/api/empleado', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre,
+          departamento: parseInt(departamento),
+          rol,
+          jornada_id: parseInt(jornadaId),
+          descriptor: descriptorArray
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert('❌ Error registrando empleado: ' + (data.error || 'Error desconocido'));
+        return;
+      }
+
+      alert('✅ Empleado registrado correctamente');
+      setNombre('');
+      setDepartamento('');
+      setRol('');
+      setFoto(null);
+    } catch (error) {
+      console.error('❌ Error en handleGuardar:', error);
+      alert('Hubo un error inesperado. Ver consola.');
     }
-
-    alert('✅ Empleado registrado correctamente');
-    setNombre('');
-    setCodigo('');
-    setDepartamento('');
-    setRol('');
-    setFoto(null);
-  } catch (error) {
-    console.error('❌ Error en handleGuardar:', error);
-    alert('Hubo un error inesperado. Ver consola.');
-  }
-};
+  };
 
 
   return (
@@ -117,13 +132,6 @@ const handleGuardar = async () => {
         <div className="bg-slate-800 p-8 rounded-2xl shadow-xl w-full max-w-md">
           <h2 className="text-2xl font-bold mb-6 text-center text-white">Registrar Empleado</h2>
           <div className="space-y-4">
-            <input
-              type="text"
-              placeholder="Código"
-              className="w-full p-3 rounded-lg bg-slate-700 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={codigo}
-              onChange={(e) => setCodigo(e.target.value)}
-            />
             <input
               type="text"
               placeholder="Nombre"
@@ -150,6 +158,17 @@ const handleGuardar = async () => {
               <option value="admin">Administrador</option>
               <option value="user">Usuario</option>
             </select>
+            <select
+              value={jornadaId}
+              onChange={(e) => setJornadaId(e.target.value)}
+              className="w-full p-3 rounded-lg bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Seleccione una jornada</option>
+              {jornadas.map((j) => (
+                <option key={j.id} value={j.id}>{j.nombre}</option>
+              ))}
+            </select>
+
             <input
               type="file"
               accept="image/*"

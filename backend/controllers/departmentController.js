@@ -24,7 +24,6 @@ const getDepartamentosConEmpleados = async (req, res) => {
       if (row.empleado_id) {
         departamentosMap.get(row.departamento_id).empleados.push({
           id: row.empleado_id,
-          codigo: row.empleado_codigo,
           nombre: row.empleado_nombre,
           jornada: {
             nombre: row.jornada_nombre,
