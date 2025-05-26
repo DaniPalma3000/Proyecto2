@@ -39,11 +39,6 @@ const UserDashboard = () => {
 
         {/* New flex container: left department + right button */}
         <div className="mb-8 flex justify-start items-center gap-x-4">
-  {/* Left side */}
-  <div className="text-white flex flex-col mr-4">
-    <p className="font-semibold mb-1">Departamento</p>
-    <div className="w-48 h-10 border border-gray-600 rounded-md bg-slate-700"></div>
-  </div>
 
   {/* Right side: the button */}
   <a
