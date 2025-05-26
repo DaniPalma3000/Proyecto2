@@ -1,4 +1,3 @@
-
 SELECT
   e.codigo AS codigo_empleado,
   e.nombre AS nombre_empleado,
@@ -7,10 +6,10 @@ SELECT
   j.hora_entrada,
   j.hora_salida,
   m.fecha,
-  MAX(CASE WHEN m.tipo_marca = 'entrada' THEN m.hora END) AS hora_entrada,
-  MAX(CASE WHEN m.tipo_marca = 'salida' THEN m.hora END) AS hora_salida,
-  GREATEST(EXTRACT(MINUTE FROM MAX(CASE WHEN m.tipo_marca = 'entrada' THEN m.hora END) - j.hora_entrada), 0) AS minutos_tarde,
-  GREATEST(EXTRACT(MINUTE FROM j.hora_salida - MAX(CASE WHEN m.tipo_marca = 'salida' THEN m.hora END)), 0) AS minutos_temprano
+  MAX(CASE WHEN m.tipo_marca = 'E' THEN m.hora END) AS hora_entrada,
+  MAX(CASE WHEN m.tipo_marca = 'S' THEN m.hora END) AS hora_salida,
+  GREATEST(ROUND(EXTRACT(EPOCH FROM MAX(CASE WHEN m.tipo_marca = 'E' THEN m.hora END) - j.hora_entrada) / 60), 0) AS minutos_tarde,
+  GREATEST(ROUND(EXTRACT(EPOCH FROM j.hora_salida - MAX(CASE WHEN m.tipo_marca = 'S' THEN m.hora END)) / 60), 0) AS minutos_temprano
 FROM empleado e
 JOIN departamento d ON e.departamento_id = d.id
 JOIN jornada j ON e.jornada_id = j.id

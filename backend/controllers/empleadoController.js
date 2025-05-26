@@ -1,22 +1,52 @@
 const pool = require('../db');
 
-const registrarEmpleado = async (req, res) => {
-  const { codigo, nombre } = req.body;
-
-  if (!codigo || !nombre) {
-    return res.status(400).json({ error: 'Código y nombre son obligatorios' });
-  }
-
+const listarEmpleados = async (req, res) => {
   try {
-    await pool.query(
-      'INSERT INTO empleado (codigo, nombre, jornada_id, departamento_id) VALUES ($1, $2, 1, 1)',
-      [codigo, nombre]
-    );
-    res.status(200).json({ mensaje: 'Empleado registrado en la base de datos' });
+    const result = await pool.query('SELECT * FROM empleado');
+    res.status(200).json(result.rows);
   } catch (err) {
-    console.error('Error al registrar empleado:', err);
-    res.status(500).json({ error: 'Error al insertar el empleado en la base de datos' });
+    console.error('Error al obtener empleados:', err);
+    res.status(500).json({ error: 'Error al obtener empleados desde la base de datos' });
   }
 };
 
-module.exports = { registrarEmpleado };
+const registrarEmpleado = async (req, res) => {
+  const { codigo, nombre, departamento, rol, descriptor } = req.body;
+
+  if (!codigo || !nombre || !departamento || !rol || !descriptor) {
+    return res.status(400).json({ error: 'Faltan datos requeridos' });
+  }
+
+  if (isNaN(departamento)) {
+    return res.status(400).json({ error: 'Departamento inválido' });
+  }
+
+  try {
+    // Obtener IDs de jornada y departamento (por defecto usamos 1 si no hay lógica avanzada)
+    const jornada_id = 1; // aún lo dejamos fijo si no hay lógica extra
+    const departamento_id = parseInt(departamento); // 👈 importante si viene como string
+
+
+    const result = await pool.query(
+      `INSERT INTO empleado (codigo, nombre, jornada_id, departamento_id, descriptor)
+   VALUES ($1, $2, $3, $4, $5)`,
+      [codigo, nombre, jornada_id, departamento_id, JSON.stringify(descriptor)]
+    );
+
+    res.status(200).json({ mensaje: 'Empleado registrado en la base de datos' });
+  } catch (err) {
+    console.error('Error al registrar empleado:', err);
+    if (err.code === '23505') {
+      res.status(409).json({ error: 'El código de empleado ya existe' });
+    } else {
+      res.status(500).json({ error: 'Error al insertar el empleado en la base de datos' });
+    }
+  }
+};
+
+const obtenerDescriptores = async (req, res) => {
+  const result = await pool.query('SELECT codigo, descriptor FROM empleado WHERE descriptor IS NOT NULL');
+  res.status(200).json(result.rows);
+};
+
+module.exports = { registrarEmpleado, obtenerDescriptores, listarEmpleados };

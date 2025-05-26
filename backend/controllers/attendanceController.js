@@ -4,16 +4,22 @@ const fs = require('fs');
 const path = require('path');
 
 const registrarMarca = async (req, res) => {
-  const { codigo_empleado, tipo_marca, fecha } = req.body;
+  const { codigo_empleado } = req.body;
 
-  if (!codigo_empleado || !tipo_marca || !fecha) {
-    return res.status(400).json({ error: 'Faltan datos obligatorios' });
+  if (!codigo_empleado) {
+    return res.status(400).json({ error: 'Código de empleado requerido' });
   }
 
   try {
     const query = fs.readFileSync(path.join(__dirname, '../queries/attendance.sql'), 'utf8');
-    const result = await pool.query(query, [codigo_empleado, tipo_marca, fecha]);
-    res.status(200).json({ mensaje: 'Marca registrada correctamente', resultado: result.rowCount });
+    const result = await pool.query(query, [codigo_empleado]);
+
+    const tipo = result.rows[0]?.insertar_marca;
+
+    res.status(200).json({
+      mensaje: 'Marca registrada correctamente',
+      tipo_marca: tipo === 'E' ? 'Entrada' : 'Salida'
+    });
   } catch (err) {
     console.error('Error al registrar marca:', err);
     res.status(500).json({ error: 'Error del servidor' });

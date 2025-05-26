@@ -1,6 +1,10 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import * as faceapi from 'face-api.js';
+import * as tf from '@tensorflow/tfjs';
+
+tf.setBackend('cpu').then(() => {
+});
 
 const FaceScanner = () => {
   const videoRef = useRef(null);
@@ -23,26 +27,44 @@ const FaceScanner = () => {
     await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
   };
 
-  const loadDescriptors = () => {
-    const data = JSON.parse(localStorage.getItem('descriptores')) || [];
-    return data.map((d) => {
-      const descriptor = new Float32Array(d.descriptor);
-      return new faceapi.LabeledFaceDescriptors(d.codigo_empleado, [descriptor]);
-    });
+  const loadDescriptors = async () => {
+    try {
+      const res = await fetch('http://localhost:3000/api/descriptores');
+      const data = await res.json();
+      localStorage.removeItem('descriptores');
+
+      return data
+        .filter((d) => d && d.descriptor && d.descriptor.length === 128)
+        .map((d) => {
+          const descriptor = new Float32Array(d.descriptor);
+          return new faceapi.LabeledFaceDescriptors(d.codigo, [descriptor]);
+        });
+    } catch (err) {
+      console.error('Error al cargar descriptores desde la base:', err);
+      return [];
+    }
   };
 
   const recognizeFace = async (labeledDescriptors) => {
     const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.6);
 
-    setInterval(async () => {
+    intervalRef.current = setInterval(async () => {
+      const video = videoRef.current;
+
+      if (!video || !video.srcObject || video.readyState !== 4) return;
+      if (!videoRef.current || !videoRef.current.srcObject) return;
       const detections = await faceapi
-        .detectSingleFace(videoRef.current, new faceapi.TinyFaceDetectorOptions())
+        .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
         .withFaceLandmarks()
         .withFaceDescriptor();
 
-      if (detections) {
+      if (
+        detections &&
+        detections.descriptor instanceof Float32Array &&
+        detections.descriptor.length === 128
+      ) {
         const bestMatch = faceMatcher.findBestMatch(detections.descriptor);
-
+        console.log('Mejor coincidencia:', bestMatch);
         const ahora = Date.now();
         if (
           bestMatch.label === lastRecognition.current.codigo &&
@@ -87,17 +109,46 @@ const FaceScanner = () => {
     }
   };
 
+  const intervalRef = useRef(null);
+
   useEffect(() => {
-    loadModels().then(() => {
-      startVideo();
-      const labeled = loadDescriptors();
+    const init = async () => {
+      await tf.setBackend('cpu');
+      await tf.ready();
+      console.log('TensorFlow backend listo:', tf.getBackend());
+
+      await loadModels();
+      await startVideo();
+
+      const labeled = await loadDescriptors();
       if (labeled.length === 0) {
         setMensaje('⚠️ No hay datos registrados, por favor registre un rostro.');
       } else {
         recognizeFace(labeled);
       }
-    });
+    };
+
+    init();
+
+    return () => {
+      console.log('🧹 Limpiando FaceScanner');
+
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+
+      if (videoRef.current && videoRef.current.srcObject) {
+        videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
+      }
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
+      }
+    };
+
   }, []);
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white p-6">

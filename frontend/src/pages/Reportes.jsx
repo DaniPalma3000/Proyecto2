@@ -29,9 +29,15 @@ const Reportes = () => {
     }
   };
 
+  // Función para formatear la hora a HH:mm
+  const formatearHora = (hora) => {
+    if (!hora) return '--';
+    return hora.slice(0, 5);
+  };
+
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-6 text-white">Reporte de Asistencia</h2>
+    <div className="p-6 text-white bg-slate-900 min-h-screen">
+      <h2 className="text-2xl font-bold mb-6">Reporte de Asistencia</h2>
 
       {error && <div className="bg-red-500 text-white p-3 mb-4 rounded">{error}</div>}
 
@@ -62,9 +68,9 @@ const Reportes = () => {
         </button>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-sm text-left border border-gray-300">
-          <thead className="bg-blue-800 text-white">
+      <div className="overflow-x-auto mb-10">
+        <table className="min-w-full text-sm text-left border border-gray-600">
+          <thead className="bg-slate-800 text-white">
             <tr>
               <th className="px-6 py-3">Código</th>
               <th className="px-6 py-3">Empleado</th>
@@ -79,13 +85,13 @@ const Reportes = () => {
           <tbody>
             {reporte.length > 0 ? (
               reporte.map((r, i) => (
-                <tr key={i} className={`border-t ${i % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
+                <tr key={i} className={`border-t ${i % 2 === 0 ? 'bg-slate-700' : 'bg-slate-800'}`}>
                   <td className="px-6 py-3">{r.codigo_empleado}</td>
                   <td className="px-6 py-3">{r.nombre_empleado}</td>
                   <td className="px-6 py-3">{r.departamento}</td>
                   <td className="px-6 py-3">{r.fecha}</td>
-                  <td className="px-6 py-3">{r.hora_entrada || '--'}</td>
-                  <td className="px-6 py-3">{r.hora_salida || '--'}</td>
+                  <td className="px-6 py-3">{formatearHora(r.hora_entrada)}</td>
+                  <td className="px-6 py-3">{formatearHora(r.hora_salida)}</td>
                   <td className="px-6 py-3">{r.minutos_tarde}</td>
                   <td className="px-6 py-3">{r.minutos_temprano}</td>
                 </tr>
