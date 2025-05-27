@@ -23,7 +23,8 @@ const Navbar = () => {
       </div>
       <div className="space-x-4">
         <Link to="/admin" className="hover:underline">Inicio</Link>
-        <Link to="/empleados" className="hover:underline">Empleados</Link>
+        <Link to="/empleados" className="hover:underline">Nuevo Empleado</Link>
+        <Link to="/mantempleados" className="hover:underline">Mantenimiento Empleados</Link>
         <Link to="/reportes" className="hover:underline">Reportes</Link>
         <Link to="/departamentos" className="hover:underline">Departamentos</Link>
         <Link to="/jornadas" className="hover:underline">Jornadas</Link>

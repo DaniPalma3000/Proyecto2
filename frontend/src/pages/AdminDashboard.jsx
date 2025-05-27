@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaUsers, FaChartBar, FaBuilding } from 'react-icons/fa';
+import { FaUsers, FaChartBar, FaBuilding, FaUser } from 'react-icons/fa';
 import { MdWork } from "react-icons/md";
 
 const AdminDashboard = () => {
@@ -16,9 +16,14 @@ const AdminDashboard = () => {
 
   const sections = [
     {
+      name: 'Nuevo Empleado',
+      icon: <FaUser className="text-3xl text-yellow-400" />,
+      link: '/empleados',
+    },
+    {
       name: 'Gestión de Empleados',
       icon: <FaUsers className="text-3xl text-blue-400" />,
-      link: '/empleados',
+      link: '/mantempleados',
     },
     {
       name: 'Reportes de Asistencia',
@@ -30,7 +35,7 @@ const AdminDashboard = () => {
       icon: <FaBuilding className="text-3xl text-purple-400" />,
       link: '/departamentos',
     },
-     {
+    {
       name: 'Gestión de Jornadas',
       icon: <MdWork className="text-3xl text-blue-400" />,
       link: '/jornadas',
