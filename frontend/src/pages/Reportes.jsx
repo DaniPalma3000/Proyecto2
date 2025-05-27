@@ -30,8 +30,8 @@ const Reportes = () => {
     setLoading(true);
 
     const queryParams = new URLSearchParams({ inicio, fin });
-    if (filtroEmpleado) queryParams.append('empleado', filtroEmpleado);
-    if (filtroJornada) queryParams.append('jornada', filtroJornada);
+    if (filtroEmpleado) queryParams.append('empleado_id', filtroEmpleado);
+    if (filtroJornada) queryParams.append('jornada_id', filtroJornada);
 
     try {
       const res = await fetch(`http://localhost:3000/api/reportes/asistencia?${queryParams.toString()}`);
@@ -49,6 +49,15 @@ const Reportes = () => {
   const formatearHora = (hora) => {
     if (!hora) return '--';
     return hora.slice(0, 5);
+  };
+
+  const formatearFecha = (fechaStr) => {
+    if (!fechaStr) return '--';
+    const fecha = new Date(fechaStr);
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const anio = fecha.getFullYear();
+    return `${dia}/${mes}/${anio}`;
   };
 
   return (
@@ -97,7 +106,7 @@ const Reportes = () => {
               <th className="px-4 py-2">Empleado</th>
               <th className="px-4 py-2">Departamento</th>
               <th className="px-4 py-2">Jornada</th>
-              {/* <th className="px-4 py-2">Horario</th> */}
+              <th className="px-4 py-2">Horario Jornada</th>
               <th className="px-4 py-2">Fecha</th>
               <th className="px-4 py-2">Entrada</th>
               <th className="px-4 py-2">Salida</th>
@@ -113,10 +122,10 @@ const Reportes = () => {
                   <td className="px-4 py-2">{r.nombre_empleado}</td>
                   <td className="px-4 py-2">{r.departamento}</td>
                   <td className="px-4 py-2">{r.jornada}</td>
-                  {/* <td className="px-4 py-2">{formatearHora(r.hora_entrada)} - {formatearHora(r.hora_salida)}</td> */}
+                  <td className="px-4 py-2">{formatearHora(r.hora_entrada)} - {formatearHora(r.hora_salida)}</td>
                   <td className="px-4 py-2">{r.fecha}</td>
-                  <td className="px-4 py-2">{formatearHora(r.hora_entrada)}</td>
-                  <td className="px-4 py-2">{formatearHora(r.hora_salida)}</td>
+                  <td className="px-4 py-2">{formatearHora(r.hora_entrada_real)}</td>
+                  <td className="px-4 py-2">{formatearHora(r.hora_salida_real)}</td>
                   <td className="px-4 py-2">{r.minutos_tarde}</td>
                   <td className="px-4 py-2">{r.minutos_temprano}</td>
                 </tr>

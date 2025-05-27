@@ -6,8 +6,8 @@ SELECT
   j.hora_entrada,
   j.hora_salida,
   m.fecha,
-  MAX(CASE WHEN m.tipo_marca = 'E' THEN m.hora END) AS hora_entrada,
-  MAX(CASE WHEN m.tipo_marca = 'S' THEN m.hora END) AS hora_salida,
+  MAX(CASE WHEN m.tipo_marca = 'E' THEN m.hora END) AS hora_entrada_real,
+  MAX(CASE WHEN m.tipo_marca = 'S' THEN m.hora END) AS hora_salida_real,
   GREATEST(ROUND(EXTRACT(EPOCH FROM MAX(CASE WHEN m.tipo_marca = 'E' THEN m.hora END) - j.hora_entrada) / 60), 0) AS minutos_tarde,
   GREATEST(ROUND(EXTRACT(EPOCH FROM j.hora_salida - MAX(CASE WHEN m.tipo_marca = 'S' THEN m.hora END)) / 60), 0) AS minutos_temprano
 FROM empleado e
