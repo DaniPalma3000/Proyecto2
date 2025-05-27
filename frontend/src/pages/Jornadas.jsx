@@ -21,9 +21,25 @@ const Jornadas = () => {
     fetchJornadas();
   }, []);
 
+  // Valida que haya al menos 4 horas de diferencia y que la salida no sea menor a la entrada
+  const esHorarioValido = (entrada, salida) => {
+    if (!entrada || !salida) return false;
+    const [h1, m1] = entrada.split(':').map(Number);
+    const [h2, m2] = salida.split(':').map(Number);
+    const minutosEntrada = h1 * 60 + m1;
+    const minutosSalida = h2 * 60 + m2;
+    const diferencia = minutosSalida - minutosEntrada;
+    return diferencia >= 240; // 4 horas * 60 minutos
+  };
+
   const handleAgregar = (e) => {
     e.preventDefault();
     if (!nuevoNombre || !horaEntrada || !horaSalida) return;
+
+    if (!esHorarioValido(horaEntrada, horaSalida)) {
+      alert('La hora de salida debe ser al menos 4 horas mayor que la de entrada y no puede ser menor.');
+      return;
+    }
 
     fetch('http://localhost:3000/api/jornadas', {
       method: 'POST',
@@ -65,6 +81,11 @@ const Jornadas = () => {
   };
 
   const guardarEdicion = (id) => {
+    if (!esHorarioValido(editEntrada, editSalida)) {
+      alert('La hora de salida debe ser al menos 4 horas mayor que la de entrada y no puede ser menor.');
+      return;
+    }
+
     fetch(`http://localhost:3000/api/jornadas/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
