@@ -112,6 +112,7 @@ const Reportes = () => {
               <th className="px-4 py-2">Salida</th>
               <th className="px-4 py-2">Tarde</th>
               <th className="px-4 py-2">Temprano</th>
+              <th className="px-4 py-2">Permisos</th>
             </tr>
           </thead>
           <tbody>
@@ -128,6 +129,7 @@ const Reportes = () => {
                   <td className="px-4 py-2">{formatearHora(r.hora_salida_real)}</td>
                   <td className="px-4 py-2">{r.minutos_tarde}</td>
                   <td className="px-4 py-2">{r.minutos_temprano}</td>
+                  <td className="px-4 py-2">{r.tipo || '--'}</td>
                 </tr>
               ))
             ) : (

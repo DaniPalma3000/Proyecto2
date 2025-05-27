@@ -27,6 +27,7 @@ const Navbar = () => {
         <Link to="/reportes" className="hover:underline">Reportes</Link>
         <Link to="/departamentos" className="hover:underline">Departamentos</Link>
         <Link to="/jornadas" className="hover:underline">Jornadas</Link>
+        <Link to="/permisosAdmin" className="hover:underline">Permisos</Link>
         <button onClick={handleLogout} className="hover:underline text-red-400">
           Cerrar sesión
         </button>

@@ -35,6 +35,11 @@ const AdminDashboard = () => {
       icon: <MdWork className="text-3xl text-blue-400" />,
       link: '/jornadas',
     },
+    {
+      name: 'Permisos',
+      icon: <FaChartBar className="text-3xl text-yellow-400" />,
+      link: '/permisosAdmin',
+    },
   ];
 
   return (

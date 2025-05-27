@@ -11,6 +11,7 @@ import Reportes from './pages/Reportes';
 import UserDashboard from './pages/UserDashboard';
 import Permisos from './pages/Permisos';
 import Jornadas from './pages/Jornadas';
+import PermisosAdmin from './pages/PermisosAdmin';
 
 const AppContent = () => {
   const location = useLocation();
@@ -31,6 +32,7 @@ const AppContent = () => {
         <Route path="/user" element={<UserDashboard />} />
         <Route path="/permisos" element={<Permisos />} />
         <Route path="/jornadas" element={<Jornadas />} />
+        <Route path="/permisosAdmin" element={<PermisosAdmin />} />
       </Routes>
     </div>
   );
